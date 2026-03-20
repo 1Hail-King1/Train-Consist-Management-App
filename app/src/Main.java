@@ -16,6 +16,7 @@ public class Main {
         System.out.println("Bogie Capacity Details:");
         for (Map.Entry<String, Integer> entry : bogieCapacity.entrySet()) {
             System.out.println(entry.getKey() + " -> " + entry.getValue() + " seats");
+
         }
     }
 }
