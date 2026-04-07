@@ -19,15 +19,15 @@ class GoodsBogie {
     }
 }
 
-public class Main {
+public class TrainConsistManagementApp {
+
     public static void main(String[] args) {
 
         System.out.println("======================================");
-        System.out.println("UC12 - Safety Compliance Check for Goods Bogies");
+        System.out.println("UC13 - Performance Comparison (Loops vs Streams)");
         System.out.println("======================================\n");
 
         List<GoodsBogie> bogies = new ArrayList<>();
-
         bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
         bogies.add(new GoodsBogie("Open", "Coal"));
         bogies.add(new GoodsBogie("Box", "Grain"));
@@ -38,20 +38,51 @@ public class Main {
             System.out.println(b.getType() + " -> " + b.getCargo());
         }
 
-        boolean isSafe = bogies.stream()
-                .allMatch(b ->
-                        !b.getType().equals("Cylindrical") ||
-                                b.getCargo().equals("Petroleum")
-                );
+        int iterations = 100000;
 
-        System.out.println("\nSafety Compliance Status: " + isSafe);
+        // ---- Traditional Loop ----
+        long loopStart = System.nanoTime();
 
-        if (isSafe) {
-            System.out.println("Train formation is SAFE.");
-        } else {
-            System.out.println("Train formation is NOT SAFE.");
+        for (int i = 0; i < iterations; i++) {
+            boolean isSafe = true;
+            for (GoodsBogie b : bogies) {
+                if (b.getType().equals("Cylindrical") &&
+                        !b.getCargo().equals("Petroleum")) {
+                    isSafe = false;
+                    break;
+                }
+            }
         }
 
-        System.out.println("\nUC12 safety validation completed...");
+        long loopEnd = System.nanoTime();
+        long loopDuration = loopEnd - loopStart;
+
+        // ---- Stream Pipeline ----
+        long streamStart = System.nanoTime();
+
+        for (int i = 0; i < iterations; i++) {
+            boolean isSafe = bogies.stream()
+                    .allMatch(b ->
+                            !b.getType().equals("Cylindrical") ||
+                                    b.getCargo().equals("Petroleum")
+                    );
+        }
+
+        long streamEnd = System.nanoTime();
+        long streamDuration = streamEnd - streamStart;
+
+        // ---- Results ----
+        System.out.println("\nPerformance Results (over " + iterations + " iterations):");
+        System.out.println("Loop   Duration : " + loopDuration + " ns");
+        System.out.println("Stream Duration : " + streamDuration + " ns");
+
+        System.out.println("\nConclusion:");
+        if (loopDuration < streamDuration) {
+            System.out.println("Traditional Loop is FASTER than Stream in this scenario.");
+        } else {
+            System.out.println("Stream is FASTER than Traditional Loop in this scenario.");
+        }
+
+        System.out.println("\nUC13 performance comparison completed...");
     }
 }
